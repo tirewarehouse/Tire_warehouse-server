@@ -8,19 +8,31 @@ const MONGO_URI = process.env.MONGODB_URI;
 const app = express();
 const PORT = 5001;
 
-// ✅ [🔁 수정된 위치] CORS 및 JSON 파싱 미들웨어를 라우터 등록보다 먼저 실행!
-app.use(cors()); // ✅ CORS 허용 - 반드시 라우터 전에 실행해야 함!
+// ✅ CORS 허용 설정 (🔧 여기 수정)
+const allowedOrigins = [
+  'http://localhost:3000', // 로컬 개발용
+  'https://tire-warehouse-client.vercel.app' // ✅ 실제 배포된 프론트 주소 (예시)
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('❌ CORS 차단됨: ' + origin));
+    }
+  }
+}));
+
 app.use(express.json());
 
-// ✅ [추가된 설명] 라우터 등록은 이 아래에 있어야 요청을 차단하지 않음
+// ✅ 라우터 등록
 const searchRoutes = require('./routes/search');
 app.use('/api/search', searchRoutes);
 
-// server/server.js 내부
-const adminRoutes = require('./routes/admin'); // 추가
-app.use('/api/admin', adminRoutes); // 추가
+const adminRoutes = require('./routes/admin');
+app.use('/api/admin', adminRoutes);
 
-// server.js에 추가
 const optionsRoutes = require('./routes/options');
 app.use('/api/options', optionsRoutes);
 
@@ -33,7 +45,7 @@ app.get('/', (req, res) => {
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB 연결 성공!');
-    console.log('📌 연결된 DB 이름:', mongoose.connection.name); // ⬅️ 이 줄 추가
+    console.log('📌 연결된 DB 이름:', mongoose.connection.name);
   })
   .catch((err) => console.error('❌ MongoDB 연결 실패:', err));
 
