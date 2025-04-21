@@ -1,4 +1,4 @@
-require('dotenv').config(); // ✅ 반드시 최상단에!
+require('dotenv').config(); // ✅ 최상단에 위치
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -8,10 +8,10 @@ const MONGO_URI = process.env.MONGODB_URI;
 const app = express();
 const PORT = 5001;
 
-// ✅ CORS 허용 설정 (🔧 여기 수정)
+// ✅ CORS 설정
 const allowedOrigins = [
-  'http://localhost:3000', // 로컬 개발용
-  'https://tire-warehouse-client.vercel.app' // ✅ 실제 배포된 프론트 주소 (예시)
+  'http://localhost:3000', // 개발용
+  'https://tire-warehouse-client.vercel.app' // Vercel 배포용
 ];
 
 app.use(cors({
@@ -36,7 +36,7 @@ app.use('/api/admin', adminRoutes);
 const optionsRoutes = require('./routes/options');
 app.use('/api/options', optionsRoutes);
 
-// ✅ 기본 라우트
+// ✅ 기본 루트
 app.get('/', (req, res) => {
   res.send('타이어 창고 백엔드 서버 실행 중!');
 });
