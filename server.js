@@ -10,8 +10,9 @@ const PORT = 5001;
 
 // ✅ CORS 설정
 const allowedOrigins = [
-  'http://localhost:3000', // 개발용
-  'https://tire-warehouse-client.vercel.app' // Vercel 배포용
+  'http://localhost:3000', // 로컬 개발용
+  'https://tire-warehouse-client.vercel.app', // 정식 배포 주소
+  'https://tire-warehouse-client-git-master-tirewarehouses-projects.vercel.app' // Vercel preview 주소
 ];
 
 app.use(cors({
