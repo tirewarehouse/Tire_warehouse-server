@@ -69,10 +69,7 @@ router.post("/in", async (req, res) => {
 
 // ✅ 위치 중복 확인
 router.get("/check-location", async (req, res) => {
-  const { x, y, z, id } = req.query;
-  if (!id) {
-    return res.status(400).json({ message: "id가 필요합니다." });
-  }
+  const { x, y, z } = req.query;
 
   if (!x || !y || !z) {
     return res.status(400).json({ message: "x, y, z 모두 필요합니다." });
@@ -89,6 +86,16 @@ router.get("/check-location", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "위치 확인 중 오류 발생", error: err });
   }
+});
+
+router.get("/get-detail", async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    return res.status(400).json({ message: "id가 필요합니다." });
+  }
+
+  const tire = await Tire.findOne({ _id: id });
+  res.json(tire);
 });
 
 // ✅ 차량번호 중복 확인
