@@ -16,6 +16,7 @@ const tireSchema = new mongoose.Schema({
   dateOut: { type: Date, require: false }, // ✅ 출고일 추가
   quantity: { type: Number, required: true },
   type: { type: String, required: true },
+  position: { type: String,  required: true },
 
   // ✅ 여러 개의 위치 정보 저장
   locations: { type: [locationSchema], required: true }, 

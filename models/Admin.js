@@ -15,9 +15,9 @@ const adminSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: false // ✅ 필수로 설정할 경우
+    required: true, // ✅ 필수로 설정할 경우
     // required: false // 👉 선택 사항으로 하려면 이렇게
   }
 });
 
-module.exports = mongoose.model('Admin', adminSchema);
+module.exports = mongoose.model("Admin", adminSchema);

@@ -8,19 +8,17 @@ const Company = require("../models/Company"); // ✅ 추가: Company 모델 불�
 // ✅ 관리자 로그인
 router.post("/login", async (req, res) => {
   const { id, password } = req.body;
-  const phone = id;
-
-  console.log("📥 로그인 요청:", phone, password);
+  const name = id;
 
   if (!id || !password) {
-    return res.status(400).json({ message: "아이디와 비밀번호를 입력하세요." });
+    return res.status(400).json({ message: "이름와 비밀번호를 입력하세요." });
   }
 
   try {
     const allAdmins = await Admin.find();
     console.log("📋 전체 관리자 목록:", allAdmins);
 
-    const admin = await Admin.findOne({ phone });
+    const admin = await Admin.findOne({ name });
     console.log("🔍 조회된 관리자:", admin);
 
     if (!admin || admin.password !== password) {
@@ -239,6 +237,61 @@ router.delete("/companies/:id", async (req, res) => {
     res.json({ message: "✅ 회사 삭제 성공" });
   } catch (err) {
     console.error("❌ 회사 삭제 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+router.post("/add-admin", async (req, res) => {
+  const { name, password, phone } = req.body;
+  try {
+    const exists = await Admin.findOne({ name });
+    if (exists) {
+      return res.status(500).json({ message: "❌ 이미 등록된 이름입니다." });
+    }
+    await Admin.create({ name, password, phone });
+    res.status(200).json({ message: "✅ 관리자 추가 성공" });
+  } catch (err) {
+    console.error("❌ 관리자 추가 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+router.put('/update-admin', async (req, res) => {
+  const { name, password, phone } = req.body;
+
+  try {
+    const exists = await Admin.findOne({ name });
+    if (!exists) {
+      return res.status(500).json({ message: "❌ 해당 관리자를 찾을 수 없습니다." });
+    }
+    await Admin.updateOne({ name }, { $set: { password, phone } });
+    res.status(200).json({ message: "✅ 관리자 정보 수정 성공" });
+  } catch (err) {
+    console.error("❌ 관리자 정보 수정 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+router.delete('/delete-admin', async (req, res) => {
+  const { name } = req.body;
+  try {
+    const deleted = await Admin.findOneAndDelete({ name });
+    if (!deleted) {
+      return res.status(500).json({ message: "❌ 해당 관리자를 찾을 수 없습니다." });
+    }
+    res.json({ message: "✅ 관리자 삭제 성공" });
+  } catch (err) {
+    console.error("❌ 관리자 삭제 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+router.get('/get-admin', async (req, res) => {
+  try {
+    const admins = await Admin.find({ name: { $ne: "관리자" } });
+    res.json(admins);
+  } catch (err) {
+    console.error("❌ 관리자 조회 오류:", err);
     res.status(500).json({ message: "서버 오류" });
   }
 });
