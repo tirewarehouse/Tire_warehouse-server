@@ -5,6 +5,7 @@ const Admin = require("../models/Admin");
 const Tire = require("../models/Tire");
 const Company = require("../models/Company"); // ✅ 추가: Company 모델 불러오기
 
+// *** 관리자 관리 ***
 // ✅ 관리자 로그인
 router.post("/login", async (req, res) => {
   const { id, password } = req.body;
@@ -32,6 +33,60 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
+
+router.post("/add-admin", async (req, res) => {
+  const { name, password, phone } = req.body;
+  try {
+    const exists = await Admin.findOne({ name });
+    if (exists) {
+      return res.status(500).json({ message: "❌ 이미 등록된 이름입니다." });
+    }
+    await Admin.create({ name, password, phone });
+    res.status(200).json({ message: "✅ 관리자 추가 성공", success: true });
+  } catch (err) {
+    res.status(500).json({ message: "❌ 관리자 추가 오류", success: false });
+  }
+});
+
+router.put("/update-admin", async (req, res) => {
+  const { name, password, newPassword } = req.body;
+
+  try {
+    const exists = await Admin.findOne({ name, password });
+    if (!exists) {
+      return res.status(500).json({ message: "❌ 변경 전 비밀번호가 일치하지 않습니다." });
+    }
+    await Admin.updateOne({ name }, { $set: { password: newPassword } });
+    res.status(200).json({ message: "✅ 관리자 정보 수정 성공", success: true });
+  } catch (err) {
+    res.status(500).json({ message: "❌ 관리자 정보 수정 오류", success: false });
+  }
+});
+
+router.delete("/delete-admin", async (req, res) => {
+  const { name } = req.query;
+  try {
+    const deleted = await Admin.findOneAndDelete({ name });
+    if (!deleted) {
+      return res.status(500).json({ message: "❌ 해당 관리자를 찾을 수 없습니다.", success: false });
+    }
+    res.json({ message: "✅ 관리자 삭제 성공", success: true });
+  } catch (err) {
+    res.status(500).json({ message: "❌ 관리자 삭제 오류", success: false });
+  }
+});
+
+router.get("/get-admins", async (req, res) => {
+  try {
+    const admins = await Admin.find({ name: { $ne: "관리자" } });
+    res.json(admins);
+  } catch (err) {
+    console.error("❌ 관리자 조회 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+// *** 타이어 관리 ***
 
 // ✅ 입고 등록
 router.post("/in", async (req, res) => {
@@ -237,61 +292,6 @@ router.delete("/companies/:id", async (req, res) => {
     res.json({ message: "✅ 회사 삭제 성공" });
   } catch (err) {
     console.error("❌ 회사 삭제 오류:", err);
-    res.status(500).json({ message: "서버 오류" });
-  }
-});
-
-router.post("/add-admin", async (req, res) => {
-  const { name, password, phone } = req.body;
-  try {
-    const exists = await Admin.findOne({ name });
-    if (exists) {
-      return res.status(500).json({ message: "❌ 이미 등록된 이름입니다." });
-    }
-    await Admin.create({ name, password, phone });
-    res.status(200).json({ message: "✅ 관리자 추가 성공" });
-  } catch (err) {
-    console.error("❌ 관리자 추가 오류:", err);
-    res.status(500).json({ message: "서버 오류" });
-  }
-});
-
-router.put('/update-admin', async (req, res) => {
-  const { name, password, phone } = req.body;
-
-  try {
-    const exists = await Admin.findOne({ name });
-    if (!exists) {
-      return res.status(500).json({ message: "❌ 해당 관리자를 찾을 수 없습니다." });
-    }
-    await Admin.updateOne({ name }, { $set: { password, phone } });
-    res.status(200).json({ message: "✅ 관리자 정보 수정 성공" });
-  } catch (err) {
-    console.error("❌ 관리자 정보 수정 오류:", err);
-    res.status(500).json({ message: "서버 오류" });
-  }
-});
-
-router.delete('/delete-admin', async (req, res) => {
-  const { name } = req.body;
-  try {
-    const deleted = await Admin.findOneAndDelete({ name });
-    if (!deleted) {
-      return res.status(500).json({ message: "❌ 해당 관리자를 찾을 수 없습니다." });
-    }
-    res.json({ message: "✅ 관리자 삭제 성공" });
-  } catch (err) {
-    console.error("❌ 관리자 삭제 오류:", err);
-    res.status(500).json({ message: "서버 오류" });
-  }
-});
-
-router.get('/get-admin', async (req, res) => {
-  try {
-    const admins = await Admin.find({ name: { $ne: "관리자" } });
-    res.json(admins);
-  } catch (err) {
-    console.error("❌ 관리자 조회 오류:", err);
     res.status(500).json({ message: "서버 오류" });
   }
 });
