@@ -15,29 +15,41 @@ router.get(baseUrl, async (req, res) => {
 });
 
 router.post(baseUrl, async (req, res) => {
-  const { name, memo } = req.body;
+  const { name, address, memo } = req.body;
   const exists = await Warehouse.findOne({ name });
   if (exists) {
     return res.status(400).json({ message: "이미 존재하는 창고입니다." });
   }
   try {
-    const newWarehouse = new Warehouse({ name, memo });
+    const newWarehouse = new Warehouse({ name, address, memo });
     await newWarehouse.save();
-    res.status(201).json(newWarehouse);
+    res.status(201).json({ message: "창고 생성 성공", success: true });
   } catch (err) {
     console.error("❌ 창고 생성 실패:", err);
-    res.status(500).json({ message: "창고 생성 실패" });
+    res.status(500).json({ message: "창고 생성 실패", success: false });
   }
 });
 
-router.delete(baseUrl, async (req, res) => {
+router.delete(`${baseUrl}/:id`, async (req, res) => {
   const { id } = req.params;
   try {
     await Warehouse.findByIdAndDelete(id);
     res.json({ message: "창고 삭제 성공" });
   } catch (err) {
     console.error("❌ 창고 삭제 실패:", err);
-    res.status(500).json({ message: "창고 삭제 실패" });
+    res.status(500).json({ message: "창고 삭제 실패", success: false });
+  }
+});
+
+router.put(`${baseUrl}/:id`, async (req, res) => {
+  const { id } = req.params;
+  const { name, address, memo } = req.body;
+  try {
+    await Warehouse.findByIdAndUpdate(id, { name, address, memo });
+    res.json({ message: "창고 수정 성공", success: true });
+  } catch (err) {
+    console.error("❌ 창고 수정 실패:", err);
+    res.status(500).json({ message: "창고 수정 실패", success: false });
   }
 });
 

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const warehouseSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  address: { type: String, required: true },
   memo: { type: String, required: false },
 });
 

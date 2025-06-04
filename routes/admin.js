@@ -90,7 +90,7 @@ router.get("/get-admins", async (req, res) => {
 
 // ✅ 입고 등록
 router.post("/in", async (req, res) => {
-  const { carNumber, company, type, quantity, locations, memo, dateIn, dateOut } = req.body;
+  const { carNumber, company, type, quantity, locations, memo, dateIn, dateOut, warehouse } = req.body;
 
   if (!carNumber || !company || !type || !quantity || !locations?.length) {
     return res.status(400).json({ message: "❗ 필수값 누락" });
@@ -111,6 +111,7 @@ router.post("/in", async (req, res) => {
       memo,
       dateIn: dateIn ? new Date(dateIn) : new Date(),
       dateOut: dateOut ? new Date(dateOut) : undefined,
+      warehouse,
     });
 
     res.status(201).json({ message: "✅ 입고 성공", data: newTire });

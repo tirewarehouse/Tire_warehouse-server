@@ -13,8 +13,21 @@ router.get("/histories", async (req, res) => {
 });
 
 router.post("/histories", async (req, res) => {
+  const { carNumber, company, type, quantity, locations, memo, dateIn, dateOut, warehouse, creator, historyType } = req.body;
   try {
-    const newHistory = new TireHistory(req.body);
+    const newHistory = new TireHistory({
+      carNumber,
+      company,
+      type,
+      quantity,
+      locations,
+      memo,
+      dateIn: dateIn ? new Date(dateIn) : new Date(),
+      dateOut: dateOut ? new Date(dateOut) : undefined,
+      warehouse,
+      creator,
+      historyType,
+    });
     await newHistory.save();
     res.status(201).json(newHistory);
   } catch (err) {
