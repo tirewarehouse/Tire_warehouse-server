@@ -19,6 +19,7 @@ const tireHistorySchema = new mongoose.Schema(
     memo: { type: String },
     creator: { type: String, required: true },
     historyType: { type: String, required: true },
+    historyMemo: { type: String, required: false },
   },
   { timestamps: true }
 );
