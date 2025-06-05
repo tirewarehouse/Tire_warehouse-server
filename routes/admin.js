@@ -142,6 +142,20 @@ router.get("/check-location", async (req, res) => {
   }
 });
 
+router.get("/check-locations", async (req, res) => {
+  const { x, y, z, warehouse } = req.query;
+  if (!x || !y || !z) {
+    return res.status(400).json({ message: "x, y, z 모두 필요합니다." });
+  }
+  const tire = await Tire.findOne({
+    warehouse,
+    locations: {
+      $elemMatch: { x: Number(x), y: Number(y), z: Number(z) },
+    },
+  });
+  res.json({ exists: !!tire });
+});
+
 router.get("/get-detail", async (req, res) => {
   const { id } = req.query;
   if (!id) {
