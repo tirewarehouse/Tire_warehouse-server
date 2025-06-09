@@ -27,10 +27,10 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "❌ 잘못된 아이디 또는 비밀번호입니다." });
     }
 
-    res.status(200).json({ message: "✅ 로그인 성공!", name: admin.name });
+    res.status(200).json({ message: "✅ 로그인 성공!", name: admin.name, success: true });
   } catch (error) {
     console.error("로그인 중 오류:", error);
-    res.status(500).json({ message: "서버 오류" });
+    res.status(500).json({ message: "서버 오류", success: false });
   }
 });
 
