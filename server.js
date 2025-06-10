@@ -45,6 +45,12 @@ app.use("/api/history", historyRoutes);
 const warehouseRoutes = require("./routes/warehouse");
 app.use("/api/warehouse", warehouseRoutes);
 
+const inventoryRoutes = require("./routes/inventory");
+app.use("/api/inventory", inventoryRoutes);
+
+const companyRoutes = require("./routes/company");
+app.use("/api/company", companyRoutes);
+
 // ✅ 기본 루트
 app.get("/", (req, res) => {
   res.send("타이어 창고 백엔드 서버 실행 중!");
